@@ -41,6 +41,11 @@ namespace ItunesSearchMVC.Models
     public class ItunesSearchModel
     {
         public int resultCount { get; set; }
-        public IList<Results> results { get; set; }
+
+        public List<Results> results { get; set; }
+
+        public string searchString { get; set; }
+
+        public string searchType { get; set;}
     }
 }

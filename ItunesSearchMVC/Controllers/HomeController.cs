@@ -1,5 +1,6 @@
 ﻿using ItunesSearchMVC.Models;
 using System;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -8,10 +9,23 @@ namespace ItunesSearchMVC.Controllers
 {
     public class HomeController : Controller
     {
-        public async Task<ActionResult> Index()
+        public ActionResult Index()
+        {
+            var model = new ItunesSearchModel();
+
+            return View("Index", model);
+        }
+
+        [HttpPost]
+        [ActionName("Index")]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Index(ItunesSearchModel itunesSearch)
         {
             string apiUrl = "https://itunes.apple.com/search?term=jack+johnson";
 
+            var lastreleaseDate = DateTime.Now.AddYears(-8);
+
+            var model = new ItunesSearchModel();
             using (HttpClient client = new HttpClient())
             {
                 client.BaseAddress = new Uri(apiUrl);
@@ -24,9 +38,18 @@ namespace ItunesSearchMVC.Controllers
                     var searchContent = await response.Content.ReadAsStringAsync();
 
                     var acutalData = Newtonsoft.Json.JsonConvert.DeserializeObject<ItunesSearchModel>(searchContent);
-                }
+                    model.results = acutalData.results.Where(l => l.releaseDate >= lastreleaseDate).ToList();
+                }                
             }
-            return View();
+
+            return View("Index", model);
+        }
+
+        public ActionResult Create()
+        {
+            var model = new ItunesSearchModel();
+
+            return View("Create", model);
         }
     }
 }

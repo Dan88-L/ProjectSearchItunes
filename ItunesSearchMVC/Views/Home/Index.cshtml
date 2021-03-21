@@ -1,12 +1,60 @@
-﻿@{
+﻿@model ItunesSearchMVC.Models.ItunesSearchModel
+@{
     ViewBag.Title = "Home Page";
 }
 
 <div class="jumbotron">
     <h4>Itunes Search</h4>
-
 </div>
 
-<div class="row">
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <div>
+        <form class="form-horizontal">
+            <div class="row">
+                <div class="col-xs-5">
+                    <div class="form-group">
+                        <label class="control-label col-xs-2">Search</label>
+                        <div class="col-xs-3" style="width:70%">
+                            @Html.EditorFor(model => model.searchString, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-6">
+                    <div class="form-group">
+                        <label class="control-label col-xs-1">Type</label>
+                        <div class="col-xs-3" style="width:40%">
+                            @Html.DropDownListFor(m => m.searchType, new List<SelectListItem>()
+                                                              {
+                                                                 new SelectListItem() { Text = "Music Video", Value = "MVD"},
+                                                                 new SelectListItem() { Text = "Audio Book", Value = "ADB" },
+                                                                 new SelectListItem() { Text = "Movie", Value = "Movie" }
+                                                              }, "--Select a Type--", new { @class = "dropdownlist" })
+                            @Html.ValidationMessageFor(m => m.searchType, "", new { @class = "text-danger" })
+                        </div>
+                        <input type="submit" value="Search" class="col-xs-2" />
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+}
+@if (Model.results != null)
+{
+    <h3>Search Results</h3>
 
-</div>
+    <div class="form-horizontal">
+        <form class="form-horizontal">
+            @foreach (var test in Model.results)
+            {
+                <img alt="" src=@test.artworkUrl100 style="display: inline; margin-right: 5px;" />
+                @test.trackName
+                <br>
+            }
+        </form>
+    </div>
+}
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
